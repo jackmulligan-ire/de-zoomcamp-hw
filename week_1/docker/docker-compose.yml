@@ -1,0 +1,25 @@
+services:
+  pg_database:
+    image: postgres:13
+    container_name: pg_database
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: ny_taxi
+    volumes:
+      - ./ny_taxi_postgres_data:/var/lib/postgresql/data
+  ny_taxi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ny_taxi
+    depends_on:
+      - pg_database
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_HOST: pg_database
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: ny_taxi

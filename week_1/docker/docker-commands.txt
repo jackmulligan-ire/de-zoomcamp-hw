@@ -1,0 +1,29 @@
+docker run -it \
+--network=taxi_network \
+--name=pg_database \
+-e POSTGRES_USER="root" \
+-e POSTGRES_PASSWORD="root" \
+-e POSTGRES_DB="ny_taxi" \
+-v $(pwd)/ny_taxi_postgres_data:/var/lib/postgresql/data \
+-p 5433:5432 \
+postgres:13
+
+python3 ingest_data.py \
+  --user=root \
+  --password=root \
+  --host=localhost \
+  --port=5433 \
+  --database=ny_taxi \
+  --file=ny_taxi_data \
+  --url=https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-04.parquet \
+  --table_name=yellow_taxi_data
+
+docker run -it --network=taxi_network ny_taxi \
+  --user=root \
+  --password=root \
+  --host=pg_database \
+  --port=5432 \
+  --database=ny_taxi \
+  --file=ny_taxi_data \
+  --url=https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-04.parquet \
+  --table_name=yellow_taxi_data
